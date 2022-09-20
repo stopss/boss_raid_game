@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserInputDto } from './dto/user.input.dto';
@@ -14,7 +14,7 @@ export class UserService {
 
   /**
    * 유저를 생성한다.
-   * @param {Object} userInputDto 
+   * @param {Object} userInputDto
    * @returns {boolean} success - 성공 여부
    * @returns {number} userId - userId(PK)
    */
@@ -43,5 +43,30 @@ export class UserService {
     } catch (NotFoundException) {
       throw NotFoundException;
     }
+  }
+
+  // 유저 조회
+  async getUser(userId: number): Promise<any> {
+    const existUser = await this.userRepository.findOne({ where: { userId } });
+
+    // userId가 없는 경우
+    if (!existUser) {
+      throw new NotFoundException(
+        Object.assign({
+          success: false,
+          statusCode: 404,
+          message: '해당 유저를 찾을 수 없습니다.',
+          timestamp: new Date().toISOString(),
+        }),
+      );
+    }
+
+    return Object.assign({
+      success: true,
+      statusCode: 200,
+      data: { totalScore: existUser.totalScore },
+      message: '유저 정보 조회에 성공했습니다.',
+      timestamp: new Date().toISOString(),
+    });
   }
 }
