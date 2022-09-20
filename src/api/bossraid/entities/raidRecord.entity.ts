@@ -10,13 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum Level {
-  LEVEL_1 = 'level_1',
-  LEVEL_2 = 'level_2',
-  LEVEL_3 = 'level_3',
-}
-
-@Entity({ name: 'raidRecord' })
+@Entity({ name: 'raidrecord' })
 export class RaidReocrdEntity {
   @PrimaryGeneratedColumn()
   raidRecordId: number;
@@ -24,8 +18,8 @@ export class RaidReocrdEntity {
   @Column()
   enteredUserId: number;
 
-  @Column({ type: 'enum', enum: Level, default: Level.LEVEL_1 })
-  level: Level;
+  @Column()
+  level: string;
 
   @Column({ nullable: true })
   score: number;
@@ -41,7 +35,7 @@ export class RaidReocrdEntity {
 
   @DeleteDateColumn()
   deleteAt: Date;
-  
+
   @ManyToOne(() => UserEntity, (user) => user.raidRecord)
   @JoinColumn([{ name: 'enteredUserId', referencedColumnName: 'userId' }])
   user: UserEntity;

@@ -1,4 +1,4 @@
-import { RaidReocrdEntity } from 'src/api/bossraid/entities/bossraid.entity';
+import { RaidReocrdEntity } from 'src/api/bossraid/entities/raidRecord.entity';
 import {
   Column,
   CreateDateColumn,
