@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './api/user/user.module';
+import { BossraidModule } from './api/bossraid/bossraid.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserModule } from './api/user/user.module';
       logging: true,
     }),
     UserModule,
+    BossraidModule,
   ],
   controllers: [AppController],
   providers: [AppService],

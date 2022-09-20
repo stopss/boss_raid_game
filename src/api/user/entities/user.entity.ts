@@ -1,4 +1,13 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { RaidReocrdEntity } from 'src/api/bossraid/entities/bossraid.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -22,5 +31,7 @@ export class UserEntity {
 
   @DeleteDateColumn()
   deleteAt: Date;
-}
 
+  @OneToMany(() => RaidReocrdEntity, (raidRecord) => raidRecord.enteredUserId)
+  raidRecord: RaidReocrdEntity[];
+}
