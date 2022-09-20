@@ -15,7 +15,8 @@ export class UserService {
   /**
    * 유저를 생성한다.
    * @param {Object} userInputDto 
-   * @returns {Object}
+   * @returns {boolean} success - 성공 여부
+   * @returns {number} userId - userId(PK)
    */
   async createUser(userInputDto: UserInputDto): Promise<any> {
     try {
