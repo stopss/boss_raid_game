@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { BossraidService } from './bossraid.service';
 import { BossraidStartDto } from './dto/bossraid.start.dto';
 
@@ -9,5 +9,10 @@ export class BossraidController {
   @Post('enter')
   start(@Body() bossraidStartDto: BossraidStartDto): Promise<any> {
     return this.bossRaidService.start(bossraidStartDto);
+  }
+
+  @Get()
+  status(): Promise<any> {
+    return this.bossRaidService.status();
   }
 }
