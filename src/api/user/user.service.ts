@@ -67,7 +67,7 @@ export class UserService {
 
     const bossRaidHistory = await this.raidRecordRepository.find({
       where: { enteredUserId: userId },
-      select: ['raidRecordId', 'score', 'enterTime', 'endTime']
+      select: ['raidRecordId', 'score', 'enterTime', 'endTime'],
     });
 
     return Object.assign({

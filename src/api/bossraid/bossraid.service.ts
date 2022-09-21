@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserEntity } from '../user/entities/user.entity';
 import { BossraidStartDto } from './dto/bossraid.start.dto';
 import { RaidReocrdEntity } from './entities/raidRecord.entity';
 
@@ -9,6 +10,8 @@ export class BossraidService {
   constructor(
     @InjectRepository(RaidReocrdEntity)
     private readonly raidRecordRepository: Repository<RaidReocrdEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   /**
@@ -114,6 +117,19 @@ export class BossraidService {
 
   // 보스레이드 종료
   async end(userId: number, raidRecordId: number): Promise<any> {
+    // userId가 존재하지 않는 경우
+    const user = this.userRepository.findOne({ where: { userId } });
+    if (!user) {
+      throw new NotFoundException(
+        Object.assign({
+          success: false,
+          statusCode: 404,
+          message: 'Not Found userId',
+          timestamp: new Date().toISOString(),
+        }),
+      );
+    }
+
     // userId와 raidRecordId가 일치하지 않은 경우
     const raidRecord = await this.raidRecordRepository.findOne({
       where: { raidRecordId },
@@ -127,6 +143,18 @@ export class BossraidService {
         message: '해당 레이드 기록이 없습니다.',
         timestamp: new Date().toISOString(),
       });
+    }
+
+    // raidRecordId가 존재하지 않는 경우
+    if (!raidRecord) {
+      throw new NotFoundException(
+        Object.assign({
+          success: false,
+          statusCode: 404,
+          message: 'Not Found raidRecordId',
+          timestamp: new Date().toISOString(),
+        }),
+      );
     }
 
     // 해당 레이드가 이미 종료된 경우
@@ -151,11 +179,18 @@ export class BossraidService {
     else if (level === 2) score = 47;
     else score = 85;
 
+    const totalScore = (await user).totalScore + score;
+    console.log((await user).totalScore);
+
     if (elapsedTime > 180 || raidRecord.status === true) {
+      // status: false로 변경
       await this.raidRecordRepository.update(raidRecordId, {
         status: false,
         score,
       });
+
+      // 해당 user에 totalScore 업데이트
+      await this.userRepository.update(userId, { totalScore: totalScore });
 
       return Object.assign({
         success: true,
