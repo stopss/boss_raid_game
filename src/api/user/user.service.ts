@@ -4,12 +4,16 @@ import { Repository } from 'typeorm';
 import { UserInputDto } from './dto/user.input.dto';
 import { UserEntity } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { RaidReocrdEntity } from '../bossraid/entities/raidRecord.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+
+    @InjectRepository(RaidReocrdEntity)
+    private readonly raidRecordRepository: Repository<RaidReocrdEntity>,
   ) {}
 
   /**
@@ -61,10 +65,15 @@ export class UserService {
       );
     }
 
+    const bossRaidHistory = await this.raidRecordRepository.find({
+      where: { enteredUserId: userId },
+      select: ['raidRecordId', 'score', 'enterTime', 'endTime']
+    });
+
     return Object.assign({
       success: true,
       statusCode: 200,
-      data: { totalScore: existUser.totalScore },
+      data: { totalScore: existUser.totalScore, bossRaidHistory },
       message: '유저 정보 조회에 성공했습니다.',
       timestamp: new Date().toISOString(),
     });
