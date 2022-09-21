@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { BossraidService } from './bossraid.service';
 import { BossraidStartDto } from './dto/bossraid.start.dto';
 
@@ -14,5 +14,13 @@ export class BossraidController {
   @Get()
   status(): Promise<any> {
     return this.bossRaidService.status();
+  }
+
+  @Patch('end')
+  end(
+    @Body('userId') userId: number,
+    @Body('raidRecordId') raidRecordId: number,
+  ): Promise<any> {
+    return this.bossRaidService.end(userId, raidRecordId);
   }
 }

@@ -102,13 +102,68 @@ export class BossraidService {
       },
       { status: false },
     );
-    
+
     return Object.assign({
       success: true,
       statusCode: 200,
-      data: { canEnter: true},
+      data: { canEnter: true },
       message: '보스레이드를 입장 가능합니다.',
       timestamp: new Date().toISOString(),
     });
+  }
+
+  // 보스레이드 종료
+  async end(userId: number, raidRecordId: number): Promise<any> {
+    // userId와 raidRecordId가 일치하지 않은 경우
+    const raidRecord = await this.raidRecordRepository.findOne({
+      where: { raidRecordId },
+    });
+
+    if (raidRecord.enteredUserId != userId) {
+      return Object.assign({
+        success: false,
+        statusCode: 400,
+        data: {},
+        message: '해당 레이드 기록이 없습니다.',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // 해당 레이드가 이미 종료된 경우
+    if (raidRecord.status === false) {
+      return Object.assign({
+        success: true,
+        statusCode: 200,
+        data: {},
+        message: '해당 레이드는 이미 종료되었습니다.',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // 시작한 시간으로부터 시간(3분)이 경과한 경우
+    const enterTime = raidRecord.enterTime.getTime();
+    const date = new Date().getTime();
+    const elapsedTime = (date - enterTime) / 1000;
+
+    const level = Number(raidRecord.level);
+    let score = 0;
+    if (level === 1) score = 20;
+    else if (level === 2) score = 47;
+    else score = 85;
+
+    if (elapsedTime > 180 || raidRecord.status === true) {
+      await this.raidRecordRepository.update(raidRecordId, {
+        status: false,
+        score,
+      });
+
+      return Object.assign({
+        success: true,
+        statusCode: 200,
+        data: {},
+        message: '해당 레이드가 종료되었습니다.',
+        timestamp: new Date().toISOString(),
+      });
+    }
   }
 }
