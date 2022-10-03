@@ -23,4 +23,9 @@ export class BossraidController {
   ): Promise<any> {
     return this.bossRaidService.end(userId, raidRecordId);
   }
+
+  @Get('topRankerList')
+  rankerList(@Body('userId') userId: number): Promise<any> {
+    return this.bossRaidService.rankerList(userId);
+  }
 }

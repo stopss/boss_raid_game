@@ -33,9 +33,6 @@ export class RaidReocrdEntity {
   @UpdateDateColumn()
   endTime: Date;
 
-  @DeleteDateColumn()
-  deleteAt: Date;
-
   @ManyToOne(() => UserEntity, (user) => user.raidRecord)
   @JoinColumn([{ name: 'enteredUserId', referencedColumnName: 'userId' }])
   user: UserEntity;

@@ -201,4 +201,37 @@ export class BossraidService {
       });
     }
   }
+
+  // 랭킹 조회
+  async rankerList(userId: number): Promise<any> {
+    // const topRankerList = await this.userRepository.find({
+    //   order: { totalScore: 'DESC' },
+    // });
+
+    const topRankerList = await this.userRepository
+      .createQueryBuilder('users')
+      .select(['userId, totalScore'])
+      .orderBy('totalScore', 'DESC')
+      .addSelect('@ROWNUM := @ROWNUM + 1 AS "ranker"')
+      .where('(@ROWNUM := 0) = 0')
+      .getRawMany();
+
+    const myRankingInfo = await this.userRepository
+      .createQueryBuilder('users')
+      .select(['userId, totalScore'])
+      .orderBy('totalScore', 'DESC')
+      .addSelect('@ROWNUM := @ROWNUM + 1 AS "ranker"')
+      .where('(@ROWNUM := 0) = 0')
+      .andWhere('userId = :userId', { userId })
+      // .whereInIds(userId)
+      .getRawMany();
+
+    return Object.assign({
+      success: true,
+      statusCode: 200,
+      data: { topRankerList, myRankingInfo },
+      message: '랭킹 조회가 완료되었습니다.',
+      timestamp: new Date().toISOString(),
+    });
+  }
 }

@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'user' })
+@Entity('users')
 export class UserEntity {
   @PrimaryGeneratedColumn()
   userId: number;
@@ -28,9 +28,6 @@ export class UserEntity {
 
   @UpdateDateColumn()
   updateAt: Date;
-
-  @DeleteDateColumn()
-  deleteAt: Date;
 
   @OneToMany(() => RaidReocrdEntity, (raidRecord) => raidRecord.enteredUserId)
   raidRecord: RaidReocrdEntity[];
